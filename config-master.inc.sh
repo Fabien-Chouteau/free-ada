@@ -20,7 +20,7 @@ export PROJECT_NAME=free-ada
 # PROJECT variable.
 # TODO: Put in a check when building cross compilers.
 ################################################################################
-export PROJECT=$PROJECT_NAME-9.2.0
+export PROJECT=$PROJECT_NAME-10.2.0
 
 ################################################################################
 # INSTALL_BASE_DIR - This is where tar needs to change directory to.
@@ -83,7 +83,7 @@ CORES=`grep 'model name' /proc/cpuinfo | wc -l`
 
 # Static Jobs
 # 1 = No Parallel Make Jobs (slow)
-export JOBS_NUM="4"
+export JOBS_NUM=$(nproc)
 export JOBS="-j $JOBS_NUM"
 
 # Scaled Jobs, 2 jobs per cpu core (fast)
@@ -111,15 +111,15 @@ export BINUTILS_SNAPSHOT=n
 
 if [ $BINUTILS_SNAPSHOT == "y" ]; then
     # Snapshot
-    export BINUTILS_VERSION=2.31.1 # filename version
-    export BINUTILS_SRC_VERSION=2.31.1 # extracted version
+    export BINUTILS_VERSION=2.35.90 # filename version
+    export BINUTILS_SRC_VERSION=2.35.90 # extracted version
     export BINUTILS_MIRROR=ftp://sourceware.org/pub/binutils/snapshots
     export BINUTILS_TARBALL=binutils-$BINUTILS_VERSION.tar.bz2
     export BINUTILS_DIR=binutils-$BINUTILS_SRC_VERSION
 else
     # Release
-    export BINUTILS_VERSION=2.32 # filename version
-    export BINUTILS_SRC_VERSION=2.32 # extracted version
+    export BINUTILS_VERSION=2.36.1 # filename version
+    export BINUTILS_SRC_VERSION=2.36.1 # extracted version
     export BINUTILS_MIRROR=ftp://sourceware.org/pub/binutils/releases
     export BINUTILS_TARBALL=binutils-$BINUTILS_VERSION.tar.bz2
     export BINUTILS_DIR=binutils-$BINUTILS_SRC_VERSION
@@ -131,8 +131,8 @@ export BINUTILS_SRC_VERSION
 ################################################################################
 # GDB ##########################################################################
 ################################################################################
-export GDB_VERSION=8.3.1 # filename version
-export GDB_SRC_VERSION=8.3.1 # extracted version
+export GDB_VERSION=10.1 # filename version
+export GDB_SRC_VERSION=10.1 # extracted version
 export GDB_MIRROR=ftp://www.mirrorservice.org/sites/ftp.gnu.org/gnu/gdb
 #export GDB_MIRROR=http://ftp.gnu.org/gnu/gdb
 export GDB_TARBALL=gdb-$GDB_VERSION.tar.xz
@@ -148,7 +148,7 @@ export GCC_RELEASE=y
 export GCC_TESTS=n
 
 if [ $GCC_RELEASE == "y" ]; then
-    export GCC_VERSION=9.2.0 # filename version
+    export GCC_VERSION=10.2.0 # filename version
     export GCC_SRC_VERSION=$GCC_VERSION # extracted version, change if different
     export GCC_MIRROR=ftp://ftp.mirrorservice.org/sites/sourceware.org/pub/gcc/releases/gcc-$GCC_VERSION
     export GCC_TARBALL=gcc-$GCC_VERSION.tar.xz
@@ -171,16 +171,18 @@ fi
 # GMP (GNU Multiple Precision Arithmetic Library)
 #export GMP_VERSION=4.3.2
 #export GMP_VERSION=5.1.2
-export GMP_VERSION=6.1.2
-export GMP_MIRROR=ftp://ftp.gmplib.org/pub/gmp-$GMP_VERSION
+#export GMP_VERSION=6.1.2
+export GMP_VERSION=6.2.1
+export GMP_MIRROR=ftp://ftp.gnu.org/gnu/gmp/
 export GMP_TARBALL=gmp-$GMP_VERSION.tar.xz
 export GMP_DIR=gmp-$GMP_VERSION
 
 # MPC
 #export MPC_VERSION=0.8.1
 #export MPC_VERSION=1.0.2
-export MPC_VERSION=1.0.3
-export MPC_MIRROR=http://www.multiprecision.org/mpc/download
+#export MPC_VERSION=1.0.3
+export MPC_VERSION=1.2.1
+export MPC_MIRROR=ftp://ftp.gnu.org/gnu/mpc/
 export MPC_TARBALL=mpc-$MPC_VERSION.tar.gz
 export MPC_DIR=mpc-$MPC_VERSION
 
@@ -194,20 +196,20 @@ export MPC_DIR=mpc-$MPC_VERSION
 # these failures. But you should not use an MPFR library with TLS disabled in a
 # multithreaded program (unless you know what you are doing).
 #export MPFR_VERSION=2.4.2
-#export MPFR_MIRROR=http://www.mpfr.org/mpfr-$MPFR_VERSION
-#export MPFR_PATCHES=http://www.mpfr.org/mpfr-$MPFR_VERSION/allpatches
 #export MPFR_VERSION=3.1.2
-export MPFR_VERSION=3.1.5
-export MPFR_MIRROR=http://mpfr.loria.fr/mpfr-current
-export MPFR_PATCHES=http://mpfr.loria.fr/mpfr-current/allpatches
+#export MPFR_VERSION=3.1.5
+export MPFR_VERSION=4.1.0
+export MPFR_MIRROR=https://www.mpfr.org/mpfr-$MPFR_VERSION
+export MPFR_PATCHES=https://www.mpfr.org/mpfr-$MPFR_VERSION/allpatches
 export MPFR_TARBALL=mpfr-$MPFR_VERSION.tar.xz
 export MPFR_DIR=mpfr-$MPFR_VERSION
 
 # ISL
 # The --with-isl configure option should be used if ISL is not installed in your
 # default library search path.
-export ISL_VERSION=0.16.1
-export ISL_MIRROR=ftp://ftp.mirrorservice.org/sites/sourceware.org/pub/gcc/infrastructure/
+# export ISL_VERSION=0.16.1
+export ISL_VERSION=0.23
+export ISL_MIRROR=http://isl.gforge.inria.fr
 #export ISL_MIRROR=ftp://gcc.gnu.org/pub/gcc/infrastructure
 export ISL_TARBALL=isl-$ISL_VERSION.tar.bz2
 export ISL_DIR=isl-$ISL_VERSION
@@ -215,7 +217,10 @@ export ISL_DIR=isl-$ISL_VERSION
 ################################################################################
 # Python
 ################################################################################
-export PYTHON_VERSION=2.7.14
+export PYTHON_VERSION_SHORT=3.8
+export PYTHON_VERSION=${PYTHON_VERSION_SHORT}.8
+export PYTHON_EXE="python${PYTHON_VERSION_SHORT}"
+export PIP_EXE="pip${PYTHON_VERSION_SHORT}"
 export PYTHON_MIRROR=https://www.python.org/ftp/python/$PYTHON_VERSION/
 export PYTHON_TARBALL=Python-$PYTHON_VERSION.tar.xz
 export PYTHON_DIR=Python-$PYTHON_VERSION
@@ -238,25 +243,30 @@ export GPL_YEAR=2018
 export ADACORE_DOWNLOAD_MIRROR="http://mirrors.cdn.adacore.com/art/"
 export ADACORE_GITHUB="https://github.com/AdaCore"
 
-export GPRBUILD_DIR="gprbuild"
-export GPRBUILD_GIT="${ADACORE_GITHUB}/gprbuild.git"
-export GPRBUILD_BRANCH="master"
-export GPRBUILD_COMMIT="a10ee080de8e4ca0db9d4cb98d434b9307afccaf"
+export GPRBUILD_VERSION=21.0.0
+export GPRBUILD_DIR="gprbuild-${GPRBUILD_VERSION}"
+export GPRBUILD_MIRROR=${ADACORE_GITHUB}/gprbuild/archive/v${GPRBUILD_VERSION}
+export GPRBUILD_TARBALL=${GPRBUILD_DIR}.tar.gz
 
-export XMLADA_DIR="xmlada"
-export XMLADA_GIT="${ADACORE_GITHUB}/xmlada.git"
-export XMLADA_BRANCH="master"
-export XMLADA_COMMIT="b9344050e922545c0dbd4e1dabe8564705153bf7"
+export GPRCONFIG_KB_VERSION=21.0.0
+export GPRCONFIG_KB_DIR="gprconfig_kb-${GPRCONFIG_KB_VERSION}"
+export GPRCONFIG_KB_MIRROR=${ADACORE_GITHUB}/gprconfig_kb/archive/v${GPRCONFIG_KB_VERSION}
+export GPRCONFIG_KB_TARBALL=${GPRCONFIG_KB_DIR}.tar.gz
 
-export GNATCOLL_CORE_DIR="gnatcoll-core"
-export GNATCOLL_CORE_GIT="${ADACORE_GITHUB}/gnatcoll-core.git"
-export GNATCOLL_CORE_BRANCH="master"
-export GNATCOLL_CORE_COMMIT="9203fe1b1a3efc7d3841828bafb4763f02e261a2"
+export XMLADA_VERSION=21.0.0
+export XMLADA_DIR="xmlada-${XMLADA_VERSION}"
+export XMLADA_MIRROR=${ADACORE_GITHUB}/xmlada/archive/v${XMLADA_VERSION}
+export XMLADA_TARBALL=${XMLADA_DIR}.tar.gz
 
-export GNATCOLL_BINDINGS_DIR="gnatcoll-bindings"
-export GNATCOLL_BINDINGS_GIT="${ADACORE_GITHUB}/gnatcoll-bindings.git"
-export GNATCOLL_BINDINGS_BRANCH="master"
-export GNATCOLL_BINDINGS_COMMIT="2c7b8c22550c3bdb4fa43b7149a605554f7f1caf"
+export GNATCOLL_CORE_VERSION=21.0.0
+export GNATCOLL_CORE_DIR="gnatcoll-core-${GNATCOLL_CORE_VERSION}"
+export GNATCOLL_CORE_MIRROR=${ADACORE_GITHUB}/gnatcoll-core/archive/v${GNATCOLL_CORE_VERSION}
+export GNATCOLL_CORE_TARBALL=${GNATCOLL_CORE_DIR}-${GNATCOLL_CORE_VERSION}.tar.gz
+
+export GNATCOLL_BINDINGS_VERSION=21.0.0
+export GNATCOLL_BINDINGS_DIR="gnatcoll-bindings-${GNATCOLL_BINDINGS_VERSION}"
+export GNATCOLL_BINDINGS_MIRROR=${ADACORE_GITHUB}/gnatcoll-bindings/archive/v${GNATCOLL_BINDINGS_VERSION}
+export GNATCOLL_BINDINGS_TARBALL=${GNATCOLL_BINDINGS_DIR}.tar.gz
 export GNATCOLL_BINDINGS_GMP=y
 export GNATCOLL_BINDINGS_ICONV=y
 export GNATCOLL_BINDINGS_LZMA=y
@@ -266,27 +276,27 @@ export GNATCOLL_BINDINGS_READLINE=y
 export GNATCOLL_BINDINGS_SYSLOG=y
 export GNATCOLL_BINDINGS_ZLIB=y
 
-export GNATCOLL_DB_DIR="gnatcoll-db"
-export GNATCOLL_DB_GIT="${ADACORE_GITHUB}/gnatcoll-db.git"
-export GNATCOLL_DB_BRANCH="master"
-export GNATCOLL_DB_COMMIT="a75c22bf43876fd299b30f65e472898bf9a0971e"
+export GNATCOLL_DB_VERSION=21.0.0
+export GNATCOLL_DB_DIR="gnatcoll-db-${GNATCOLL_DB_VERSION}"
+export GNATCOLL_DB_MIRROR=${ADACORE_GITHUB}/gnatcoll-db/archive/v${GNATCOLL_DB_VERSION}
+export GNATCOLL_DB_TARBALL=${GNATCOLL_DB_DIR}.tar.gz
 export GNATCOLL_DB=y
 
-export LANGKIT_DIR="langkit"
-export LANGKIT_GIT="${ADACORE_GITHUB}/langkit.git"
-export LANGKIT_BRANCH="stable"
-export LANGKIT_COMMIT="8f8d6b56d9c63a27b29a6c984bec62fb5df40309"
+export LANGKIT_VERSION=21.0.0
+export LANGKIT_DIR="langkit-${LANGKIT_VERSION}"
+export LANGKIT_MIRROR=${ADACORE_GITHUB}/langkit/archive/v${LANGKIT_VERSION}
+export LANGKIT_TARBALL=${LANGKIT_VERSION_DIR}.tar.gz
 export LANGKIT_PATCHES="${FILES}/${LANGKIT_DIR}/0001-Add-view-conversion-to-fix-compile.patch"
 
-export LIBADALANG_DIR="libadalang"
-export LIBADALANG_GIT="${ADACORE_GITHUB}/libadalang.git"
-export LIBADALANG_BRANCH="stable"
-export LIBADALANG_COMMIT="85539c5896f5841b5b8d5007354f5bdc73663f83"
+export LIBADALANG_VERSION=21.0.0
+export LIBADALANG_DIR="libadalang-${LIBADALANG_VERSION}"
+export LIBADALANG_MIRROR=${ADACORE_GITHUB}/libadalang/archive/v${LIBADALANG_VERSION}
+export LIBADALANG_TARBALL=${LIBADALANG_DIR}.tar.gz
 
 export LIBADALANG_TOOLS_DIR="libadalang-tools"
 export LIBADALANG_TOOLS_GIT="${ADACORE_GITHUB}/libadalang-tools.git"
-export LIBADALANG_TOOLS_BRANCH="master"
-export LIBADALANG_TOOLS_COMMIT="3c25ee812ceb1d944f8031235e72af98aa4ee8ea"
+export LIBADALANG_TOOLS_BRANCH="21.0"
+export LIBADALANG_TOOLS_COMMIT="a1dedd8bbbc1607405a32bf037d46863d6e3eb81"
 
 export AUNIT_DIR="aunit"
 export AUNIT_GIT="${ADACORE_GITHUB}/aunit.git"
@@ -307,9 +317,6 @@ export ASIS_DIR=${ASIS_VERSION_PREFIX}
 
 export GTKADA_MIRROR="${ADACORE_GITHUB}/gtkada.git"
 export GTKADA_DIR=gtkada
-
-export LIBADALANG_MIRROR="${ADACORE_GITHUB}/libadalang.git"
-export LIBADALANG_DIR=libadalang
 
 export GPS_MIRROR="${ADACORE_GITHUB}/gps.git"
 export GPS_DIR=gps
@@ -383,11 +390,10 @@ export AHVEN_DIR=ahven-$AHVEN_VERSION
 #X86_64_BOOTSTRAP_TARBALL="gnatboot-${BOOTSTRAP_VERSION}-amd64.tar.xz"
 #X86_64_BOOTSTRAP_MIRROR="https://www.dropbox.com/s/8qz551so8xn4t9r/${X86_64_BOOTSTRAP_TARBALL}?dl=0"
 
-BOOTSTRAP_MIRROR="http://mirrors.cdn.adacore.com/art"
-
-X86_64_LINUX_BOOTSTRAP_TARBALL="591c6d80c7a447af2deed1d7"
+BOOTSTRAP_MIRROR="https://community.download.adacore.com/v1/"
+X86_64_LINUX_BOOTSTRAP_TARBALL="9682e2e1f2f232ce03fe21d77b14c37a0de5649b"
 X86_64_LINUX_BOOTSTRAP_TARBALL_NAME="gnat-gpl-2017-x86_64-linux-bin.tar.gz"
-X86_64_MACOS_BOOTSTRAP_TARBALL="591c9045c7a447af2deed24e"
+X86_64_MACOS_BOOTSTRAP_TARBALL="7bbc77bd9c3c03fdb93699bce67b458f95d049a9"
 X86_64_MACOS_BOOTSTRAP_TARBALL_NAME="gnat-gpl-2017-x86_64-darwin-bin.tar.gz"
 #X86_64_WINDOWS_BOOTSTRAP_TARBALL=""
 

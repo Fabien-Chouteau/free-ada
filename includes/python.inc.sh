@@ -57,7 +57,7 @@ function python()
         
         make DESTDIR=$STAGE_BASE_DIR altinstall &> $LOGPRE/$PYTHON_DIR-pkg.txt
         
-        strip $STAGE_BASE_DIR$INSTALL_DIR/bin/python2.7
+        strip $STAGE_BASE_DIR$INSTALL_DIR/bin/${PYTHON_EXE}
 
         check_error .make-pkg-stage
 
@@ -116,7 +116,7 @@ function install_python_packages()
     if [ ! -f .installed-pip ]; then
         echo "  >> [2/$TASK_COUNT_TOTAL] Packaging PIP..."
 
-        python2.7 get-pip.py &> $LOGPRE/$DIRS-pip-install.txt
+        ${PYTHON_EXE} get-pip.py &> $LOGPRE/$DIRS-pip-install.txt
 
         check_error .installed-pip
     fi
@@ -124,7 +124,7 @@ function install_python_packages()
     if [ ! -f .installed-mako ]; then
         echo "  >> [3/$TASK_COUNT_TOTAL] Packaging Mako..."
 
-        pip2.7 install mako &> $LOGPRE/$DIRS-mako-install.txt
+        ${PIP_EXE} install mako &> $LOGPRE/$DIRS-mako-install.txt
 
         check_error .installed-mako
     fi
@@ -132,31 +132,15 @@ function install_python_packages()
     if [ ! -f .installed-pyyaml ]; then
         echo "  >> [4/$TASK_COUNT_TOTAL] Packaging PyYAML..."
 
-        pip2.7 install pyyaml &> $LOGPRE/$DIRS-pyyaml-install.txt
+        ${PIP_EXE} install pyyaml &> $LOGPRE/$DIRS-pyyaml-install.txt
 
         check_error .installed-pyyaml
-    fi
-
-    if [ ! -f .installed-enum ]; then
-        echo "  >> [5/$TASK_COUNT_TOTAL] Packaging Enum..."
-
-        pip2.7 install enum &> $LOGPRE/$DIRS-enum-install.txt
-
-        check_error .installed-enum
-    fi
-
-    if [ ! -f .installed-enum34 ]; then
-        echo "  >> [6/$TASK_COUNT_TOTAL] Packaging Enum34..."
-
-        pip2.7 install enum34 &> $LOGPRE/$DIRS-enum34-install.txt
-
-        check_error .installed-enum34
     fi
 
     if [ ! -f .installed-funcy ]; then
         echo "  >> [7/$TASK_COUNT_TOTAL] Packaging Funcy..."
 
-        pip2.7 install funcy &> $LOGPRE/$DIRS-funcy-install.txt
+        ${PIP_EXE} install funcy &> $LOGPRE/$DIRS-funcy-install.txt
 
         check_error .installed-funcy
     fi
@@ -164,9 +148,25 @@ function install_python_packages()
     if [ ! -f .installed-docutils ]; then
         echo "  >> [8/$TASK_COUNT_TOTAL] Packaging DocUtils..."
 
-        pip2.7 install docutils &> $LOGPRE/$DIRS-docutils-install.txt
+        ${PIP_EXE} install docutils &> $LOGPRE/$DIRS-docutils-install.txt
 
         check_error .installed-docutils
+    fi
+
+    if [ ! -f .installed-e3-core ]; then
+        echo "  >> [8/$TASK_COUNT_TOTAL] Packaging e3-core..."
+
+        ${PIP_EXE} install e3-core &> $LOGPRE/$DIRS-e3-core-install.txt
+
+        check_error .installed-e3-core
+    fi
+
+    if [ ! -f .installed-colorama ]; then
+        echo "  >> [8/$TASK_COUNT_TOTAL] Packaging e3-core..."
+
+        ${PIP_EXE} install colorama &> $LOGPRE/$DIRS-colorama-install.txt
+
+        check_error .installed-colorama
     fi
 
     echo "  >> Python packages Installed"

@@ -549,6 +549,14 @@ if [ ! -d $PKG ]; then
     mkdir -p $PKG
 fi
 
+################################################################################
+# Prepare the install directory.
+################################################################################
+
+if [ ! -d $INSTALL_DIR ]; then
+    mkdir -p $INSTALL_DIR
+fi
+
 TIMEFORMAT=$'  Last Process Took: %2lR';
 # Begin the specified build operation
 case "$build_type" in

@@ -29,7 +29,12 @@ function gpr_bootstrap()
     if [ ! -f .gprbuild_strap ]; then
         echo "  >> [1/$TASK_COUNT_TOTAL] Building and installing GPRBuild bootstrap ($1)..."
         
-        $SRC/$GPRBUILD_DIR/bootstrap.sh --srcdir=$SRC/$GPRBUILD_DIR --with-xmlada=$SRC/$XMLADA_DIR --prefix=$INSTALL_DIR &> $LOGPRE/$GPRBUILD_DIR-strap.txt
+        $SRC/$GPRBUILD_DIR/bootstrap.sh \
+            --srcdir=$SRC/$GPRBUILD_DIR \
+            --with-xmlada=$SRC/$XMLADA_DIR \
+            --with-kb=$SRC/$GPRCONFIG_KB_DIR \
+            --prefix=$INSTALL_DIR \
+            &> $LOGPRE/$GPRBUILD_DIR-strap.txt
 
         check_error .gprbuild_strap
     fi
@@ -151,6 +156,14 @@ function build_gprbuild()
             BUILD=production \
             TARGET=$3 \
             setup &> $LOGPRE/$GPRBUILD_DIR-config.txt
+
+        # Set version information
+        build_date=$(date '+%Y%m%d')
+        release_year=$(echo ${GPRBUILD_VERSION} | cut -d. -f1)
+        sed -i "s/18.0w/${GPRBUILD_VERSION}/" $SRC/$GPRBUILD_DIR/gpr/src/gpr-version.ads
+        sed -i "s/19940713/${build_date}/" $SRC/$GPRBUILD_DIR/gpr/src/gpr-version.ads
+        sed -i "s/2016/20${release_year}/" $SRC/$GPRBUILD_DIR/gpr/src/gpr-version.ads
+        sed -i "s/:= Gnatpro;/:= FSF;/" $SRC/$GPRBUILD_DIR/gpr/src/gpr-version.ads
 
         check_error .config
     fi
@@ -379,8 +392,8 @@ function gnatcoll_bindings()
         if [ ! -f .make-python ]; then
             echo "  >> [2.5/$TASK_COUNT_TOTAL] Building GNATColl-Bindings - Python ($3)..."
 
-            export GNATCOLL_PYTHON_CFLAGS=$(python2.7-config --includes)
-            export Python_Libs="-L$(python2.7-config --prefix)/lib $(python2.7-config --libs)"
+            export GNATCOLL_PYTHON_CFLAGS=$(${PYTHON_EXE}-config --includes)
+            export Python_Libs="-L$(${PYTHON_EXE}-config --prefix)/lib $(${PYTHON_EXE}-config --libs)"
 
             gnatcoll_build_component \
                 "" "python/gnatcoll_python.gpr" "" "${GNATCOLL_BINDINGS_DIR}-python"
@@ -987,7 +1000,7 @@ function langkit()
         echo "  >> [1/$TASK_COUNT_TOTAL] Configuring LangKit ($3)..."
 
         # Taken from Arch.
-        python2.7 $SRC/$LANGKIT_DIR/scripts/build-langkit_support.py \
+        ${PYTHON_EXE} $SRC/$LANGKIT_DIR/scripts/build-langkit_support.py \
             --build-dir $LANGKIT_DIR \
             generate &> $LOGPRE/$LANGKIT_DIR-config.txt
 
@@ -997,7 +1010,7 @@ function langkit()
     if [ ! -f $LANGKIT_DIR/.make ]; then
         echo "  >> [2/$TASK_COUNT_TOTAL] Building LangKit ($3)..."
 
-        python2.7 $SRC/$LANGKIT_DIR/scripts/build-langkit_support.py \
+        ${PYTHON_EXE} $SRC/$LANGKIT_DIR/scripts/build-langkit_support.py \
             --library-types relocatable \
             --build-dir $LANGKIT_DIR \
             build \
@@ -1010,19 +1023,21 @@ function langkit()
     if [ ! -f $LANGKIT_DIR/.make-pkg-stage ]; then
         echo "  >> [3/$TASK_COUNT_TOTAL] Packaging LangKit ($3)..."
 
-        python2.7 $SRC/$LANGKIT_DIR/setup.py install --prefix=$STAGE_BASE_DIR$INSTALL_DIR  &> $LOGPRE/$LANGKIT_DIR-pkg.txt
+        ${PYTHON_EXE} $SRC/$LANGKIT_DIR/setup.py install --prefix=$STAGE_BASE_DIR$INSTALL_DIR  &> $LOGPRE/$LANGKIT_DIR-pkg.txt
 
         check_error $LANGKIT_DIR/.make-pkg-stage1
 
-        python2.7 $SRC/$LANGKIT_DIR/scripts/build-langkit_support.py \
+        ${PYTHON_EXE} $SRC/$LANGKIT_DIR/scripts/build-langkit_support.py \
             --library-types relocatable \
             --build-dir $LANGKIT_DIR \
-            install $STAGE_BASE_DIR$INSTALL_DIR \
-                >>$LOGPRE/$LANGKIT_DIR-pkg.txt 2>&1
+            install \
+            --build-mode=prod \
+            $STAGE_BASE_DIR$INSTALL_DIR \
+            >>$LOGPRE/$LANGKIT_DIR-pkg.txt 2>&1
 
         check_error $LANGKIT_DIR/.make-pkg-stage2
 
-        sed -i 's@/usr/lib/python-exec/python2.7/python2@'"$INSTALL_DIR"'/bin/python2.7@' $STAGE_BASE_DIR$INSTALL_DIR/bin/create-project.py
+        sed -i 's@/usr/lib/python-exec/${PYTHON_EXE}/python3@'"$INSTALL_DIR"'/bin/${PYTHON_EXE}@' $STAGE_BASE_DIR$INSTALL_DIR/bin/create-project.py
 
         check_error $LANGKIT_DIR/.make-pkg-stage
 
@@ -1085,11 +1100,11 @@ function libadalang()
     if [ ! -f .make ]; then
         echo "  >> [3/$TASK_COUNT_TOTAL] Building LibAdaLang ($3)..."
 
-        python2.7 ada/manage.py --no-langkit-support generate --no-pretty-print &> $LOGPRE/$LIBADALANG_DIR-make-generate.txt
+        ${PYTHON_EXE} ada/manage.py --no-langkit-support generate --no-pretty-print &> $LOGPRE/$LIBADALANG_DIR-make-generate.txt
 
         check_error .make-generate
         
-        python2.7 ada/manage.py --library-types relocatable --no-langkit-support build --build-mode=prod --gargs="-R --config=$PWD/config.cgpr" \
+        ${PYTHON_EXE} ada/manage.py --library-types relocatable --no-langkit-support build --build-mode=prod --gargs="-R --config=$PWD/config.cgpr" \
             &> $LOGPRE/$LIBADALANG_DIR-make.txt
 
         check_error .make
@@ -1098,7 +1113,7 @@ function libadalang()
     if [ ! -f .make-pkg-stage ]; then
         echo "  >> [4/$TASK_COUNT_TOTAL] Packaging LibAdaLang ($3)..."
 
-        python2.7 ada/manage.py --library-types relocatable --no-langkit-support install $STAGE_BASE_DIR$INSTALL_DIR &> $LOGPRE/$LIBADALANG_DIR-pkg.txt
+        ${PYTHON_EXE} ada/manage.py --library-types relocatable --no-langkit-support install --build-mode=prod $STAGE_BASE_DIR$INSTALL_DIR &> $LOGPRE/$LIBADALANG_DIR-pkg.txt
 
         check_error .make-pkg-stage
 

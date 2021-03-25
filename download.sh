@@ -259,9 +259,14 @@ download_package "PYTHON"
 
 # AdaCore Libraries/Tools ###########################################################
 
-# download_adacore_cdn_package "GPRBUILD"
-download_adacore_cdn_package "XMLADA"
-# download_adacore_cdn_package "GNATCOLL"
+download_package "XMLADA"
+download_package "GPRBUILD"
+download_package "GPRCONFIG_KB"
+download_package "GNATCOLL_CORE"
+download_package "GNATCOLL_BINDINGS"
+download_package "GNATCOLL_DB"
+download_package "LANGKIT"
+download_package "LIBADALANG"
 # download_adacore_cdn_package "ASIS"
 
 #################################################################################
@@ -362,25 +367,24 @@ download_unpack_package "PYTHON" "J"
 
 #~ cd $SRC
 
-download_git_package "GPRBUILD"
-download_git_package "XMLADA"
-download_git_package "GNATCOLL_CORE"
-download_git_package "GNATCOLL_BINDINGS"
+download_unpack_package "XMLADA" "z"
+download_unpack_package "GPRBUILD" "z"
+download_unpack_package "GPRCONFIG_KB" "z"
+download_unpack_package "GNATCOLL_CORE" "z"
+download_unpack_package "GNATCOLL_BINDINGS" "z"
+download_unpack_package "GNATCOLL_DB" "z"
 
 # Remove the link lib iconv as this is in glibc
 if [ ! -f .gnatcoll-bindings-commented-out-iconv ]; then
-    sed -i '51,58 {s/^/--/}' gnatcoll-bindings/iconv/gnatcoll_iconv.gpr
-    sed -i '98,100 {s/^/--/}' gnatcoll-bindings/iconv/gnatcoll_iconv.gpr
+    sed -i '52,59 {s/^/--/}' ${GNATCOLL_BINDINGS_DIR}/iconv/gnatcoll_iconv.gpr
+    sed -i '99,101 {s/^/--/}' ${GNATCOLL_BINDINGS_DIR}/iconv/gnatcoll_iconv.gpr
 
     check_error .gnatcoll-bindings-commented-out-iconv
 fi
 
-download_git_package "GNATCOLL_DB"
+download_unpack_package "LANGKIT" "z"
+download_unpack_package "LIBADALANG" "z"
 
-download_git_package "LANGKIT"
-apply_patches "LANGKIT"
-
-download_git_package "LIBADALANG"
 download_git_package "LIBADALANG_TOOLS"
 
 download_git_package "AUNIT"
